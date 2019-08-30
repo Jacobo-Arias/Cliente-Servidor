@@ -8,8 +8,6 @@ import os
 pygame.mixer.init()
 
 context = zmq.Context()
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:5555")
 
 def menu(lista):
     while(True):
@@ -27,22 +25,29 @@ lista = []
 while True:
     op = menu(lista)
     if op == 0:
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5555")
         socket.send_string('listar')
         contents = socket.recv_json()
         cont = 1
-        lista = contents[1:]
-        for i in range(len(lista)):
-            print(str(cont) + '- ' + lista[i])
+        lista = contents
+        for i in range(len(contents)):
+            print(str(cont) + '- ' + contents[i])
             cont += 1
+        #socket.disconnect("tcp://localhost:5555")
     else:
-        socket.send_string(contents[op])
-        contents,nombre = socket.recv_multipart()    
-        nombre = nombre.decode('utf-8')
-        filename = open(nombre,'wb')
-        filename.write(contents)
-        filename.close()
+        socket.send_string(contents[op-1])
+        contenido = socket.recv_json()
+        for i in contenido:
+            socket = context.socket(zmq.REQ)
+            socket.connect(i[1])
+            socket.send_string(i[0])
+            recv = socket.recv()
+            filename = open(contents[op-1],'ab')
+            filename.write(recv)
+            filename.close()
         pygame.mixer.music.stop()
-        pygame.mixer.music.load(nombre)
+        pygame.mixer.music.load(contents[op-1])
         pygame.mixer.music.play()
         os.system('clear')
         lista =[]

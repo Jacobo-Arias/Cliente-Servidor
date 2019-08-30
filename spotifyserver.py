@@ -15,18 +15,15 @@ socket.bind("tcp://*:5554")
 def ls(ruta = '.'):
     return [arch for arch in listdir(ruta) if isfile(join(ruta, arch))]
 
-archivos = ls()
+archivos = ls('Canciones')
 
 while True:
     nombre = socket.recv_string()
     if nombre != 'listar':
-        try:
-            mensaje = open(nombre,'rb')
-            contents = mensaje.read()
-            socket.send_multipart([contents,nombre.encode('utf-8')])
-            mensaje.close()
-        except:
-            socket.send_multipart(['0'.encode('utf-8'),'0'.encode('utf-8')])
+        mensaje = open('Canciones/' + nombre,'rb')
+        contents = mensaje.read()
+        socket.send(contents)
+        mensaje.close()
     else:
         socket.send_json(archivos)
 
