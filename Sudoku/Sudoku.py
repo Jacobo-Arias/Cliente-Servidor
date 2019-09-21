@@ -62,7 +62,6 @@ def valid(bo, num, pos):
         for j in range(box_x * 3, box_x*3 + 3):
             if bo[i][j] == num and (i,j) != pos:
                 return False
-
     return True
 
 def filtrar(matrizsub):
