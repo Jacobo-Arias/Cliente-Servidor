@@ -35,8 +35,11 @@ tstart = time.time()
 # Process 100 confirmations
 while True:
     listwork = fan.recv_json()
+    print("done")
     if type(listwork) is list:
         sendFan.send_json(listwork)
+        print("done")
     elif type(listwork) is dict:
+        sendFan.send_json(listwork)
         print_board(listwork['solution'])
         break

@@ -64,10 +64,12 @@ print("sending tasks to workers")
 totalTime = 0
 while True:
     for work in range(len(listwork)):
-        workers.send_json(listwork.pop(1))
-    recivido = recvSink.recv_string()
+        workers.send_json(listwork.pop(0))
+        print("send")
+    recivido = recvSink.recv_json()
     if type(recivido) is list:
         listwork += recivido
+        print("recv")
     elif type(recivido) is dict:
         print_board(recivido['solution'])
         break

@@ -51,11 +51,29 @@ def reset(matrizsub):
                 matrizsub[fil][col] = []
     return matrizsub
 
-def work(matrizsub):
+def workd(matrizsub):
     matrizsub = reset(matrizsub)
     matrizsub= filtrar(matrizsub)
     matrizsub,cambio = fillone(matrizsub)
     return matrizsub,cambio
+
+def print_board(bo):
+    for i in range(len(bo)):
+        if i % 3 == 0 and i != 0:
+            print("- - - - - - - - - - - - - ")
+
+        for j in range(len(bo[0])):
+            if j % 3 == 0 and j != 0:
+                print(" | ", end="")
+
+            if type(bo[i][j]) is int:
+                show = bo[i][j]
+            else:
+                show = 0 
+            if j == 8:
+                print(show)
+            else:
+                print(str(show) + " ", end="")
 
 
 work = context.socket(zmq.PULL)
@@ -67,13 +85,15 @@ sink.connect("tcp://localhost:5558")
 
 # Process tasks forever
 while True:
+    time.sleep(1)
     w2d = work.recv_json()
     listwork = [w2d]
+    print(listwork)
     for iteraciones in range(10):
         w2d = listwork.pop(0)
         cambio = True
         while cambio:
-            w2d,cambio = work(w2d)
+            w2d,cambio = workd(w2d)
         
         # listwork.append()
         menosOP = 9
@@ -85,10 +105,17 @@ while True:
                         menosOP = len(w2d[fil][col])
                         xy = [fil,col]
 
-        candidato = w2d
+
+        candidato = []
+        print(menosOP)
+        for i in w2d:
+            candidato.append(i[:])
         for i in range(menosOP):
-            candidato[xy[0]][xy[1]]=w2d[xy[0]][xy[1]][i]
+            aux = w2d[xy[0]][xy[1]][i]
+            candidato[xy[0]][xy[1]]= aux 
             listwork.append(candidato)
+            print_board(candidato)
+            print('=======================')
 
     # Send results to sink
     sink.send_json(listwork)
