@@ -85,37 +85,39 @@ sink.connect("tcp://localhost:5558")
 
 # Process tasks forever
 while True:
-    time.sleep(1)
     w2d = work.recv_json()
     listwork = [w2d]
-    print(listwork)
-    for iteraciones in range(10):
-        w2d = listwork.pop(0)
-        cambio = True
-        while cambio:
-            w2d,cambio = workd(w2d)
-        
-        # listwork.append()
-        menosOP = 9
-        xy = []
-        for fil in range(len(w2d)):
-            for col in range(len(w2d)):
-                if type(w2d[fil][col]) is list:
-                    if len(w2d[fil][col]) < menosOP:
-                        menosOP = len(w2d[fil][col])
-                        xy = [fil,col]
+    # print(listwork)
+    # for iteraciones in range(10):
+    w2d = listwork.pop(0)
+    cambio = True
+    while cambio:
+        w2d,cambio = workd(w2d)
+    
+    # listwork.append()
+    menosOP = 9
+    xy = []
+    for fil in range(len(w2d)):
+        for col in range(len(w2d)):
+            if type(w2d[fil][col]) is list:
+                if len(w2d[fil][col]) < menosOP:
+                    menosOP = len(w2d[fil][col])
+                    xy = [fil,col]
 
 
-        candidato = []
-        print(menosOP)
-        for i in w2d:
-            candidato.append(i[:])
-        for i in range(menosOP):
-            aux = w2d[xy[0]][xy[1]][i]
-            candidato[xy[0]][xy[1]]= aux 
-            listwork.append(candidato)
-            print_board(candidato)
-            print('=======================')
+    candidato = []
+    # print(menosOP)
+    for i in w2d:
+        candidato.append(i[:])
+    for i in range(menosOP):
+        aux = w2d[xy[0]][xy[1]][i]
+        candidato[xy[0]][xy[1]]= aux 
+        listwork += [candidato[:]]
+        print_board(listwork[i])
+        print('=======================',len(listwork))
+    for i in range(len(listwork)):
+        print('\n',listwork[i],'\n')
 
     # Send results to sink
     sink.send_json(listwork)
+    _ = input()

@@ -1,8 +1,3 @@
-'''
-Codigo tomado y adaptado de
-https://techwithtim.net/tutorials/python-programming/sudoku-solver-backtracking/
-'''
-
 board = [
     [0,0,0,7,5,0,0,0,0],
     [0,3,0,0,4,8,0,2,0],
@@ -25,7 +20,7 @@ def solve(bo):
 
     for i in range(1,10):
         if valid(bo, i, (row, col)):
-            bo[row][col].append(i)
+            bo[row][col] = i
 
             if solve(bo):
                 return True
@@ -76,27 +71,12 @@ def print_board(bo):
 def find_empty(bo):
     for i in range(len(bo)):
         for j in range(len(bo[0])):
-            if type(bo[i][j]) == type([]):
+            if bo[i][j] == 0:
                 return (i, j)  # row, col
 
     return None
 
-def matrizdoble(board):
-    doble = []
-    for i in board:
-        aux = []
-        for j in i:
-            if j == 0:
-                aux.append([])
-            else:
-                aux.append(j)
-        doble.append(aux)    
-    print(doble)
-    return doble
-
 print_board(board)
-matrizsub = matrizdoble(board)
+solve(board)
 print("___________________")
-# print_board(matrizdoble)
-solve(matrizsub)
-#print_board(board)'''
+print_board(board)
