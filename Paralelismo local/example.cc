@@ -42,13 +42,23 @@ int main()
             );
         }
     }
-    // int matrizresult[n][n];
+    int matrizresult[n][n];
+    int i = 0,j = 0;
     for(auto && result: results){
         int resultados = result.get();
         cout << resultados << ' ';
+        matrizresult[i][j] = resultados;
+        j++;
+        if (j == n){
+            j = 0;
+            i++;
+        }
     }
     cout <<"hemos terminado"<< endl;
-    
-
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++)
+            cout<<matrizresult[i][j]<<" | ";
+        cout<<endl;
+    }
     return 0;
 }
