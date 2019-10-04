@@ -1,0 +1,37 @@
+http://download.zeromq.org/
+
+## UTP
+wget https://archive.org/download/zeromq_4.1.4/zeromq-4.1.4.tar.gz
+tar xvfz zeromq-4.1.4.tar.gz
+cd zeromq-4.1.4/
+./configure  --prefix=/home/utp/zmq
+make -j4
+make install
+cd ..
+git clone git://github.com/zeromq/zmqpp.git
+mkdir buildpp
+cd buildpp
+cmake -DCMAKE_INSTALL_PREFIX=/home/utp/zmq -DZEROMQ_INCLUDE=/home/utp/zmq/include -DZEROMQ_LIBRARY_SHARED=/home/utp/zmq/lib -DZEROMQ_LIBRARY_STATIC=/home/utp/zmq/lib ../zmqpp/
+make
+make install
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utp/zmq/lib
+g++ -std=c++11 -I/home/utp/zmq/include -o worker worker.cc
+g++ -std=c++11 -I/home/utp/zmq/include -L/home/utp/zmq/lib  -o worker worker.cc  -lzmq -lzmqpp
+
+## SU PC
+wget https://archive.org/download/zeromq_4.1.4/zeromq-4.1.4.tar.gz
+tar xvfz zeromq-4.1.4.tar.gz
+cd zeromq-4.1.4/
+./configure
+make -j4
+make install
+cd ..
+git clone git://github.com/zeromq/zmqpp.git
+mkdir buildpp
+cd buildpp
+cmake ../zmqpp/
+make
+sudo make install
+
+g++ -std=c++11 -o worker worker.cc -lpthread -lzmq -lzmqpp 
