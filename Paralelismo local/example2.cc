@@ -1,5 +1,5 @@
 /*
-Paralelismo local calculando celda por celda de una matriz con hilos
+Paralelismo local calculando fila por fila de una matriz con hilos
 */
 #include <iostream>
 #include <vector>
@@ -29,39 +29,40 @@ int main()
                    {1,2,3},
                    {1,2,3}};
 
+    // cout <<thread::hardware_concurrency() << endl;
     ThreadPool pool(thread::hardware_concurrency());
     vector< future<int> > results;
-    auto start = chrono::system_clock::now();
     for(int i = 0; i < n;i++){
-        for(int j = 0;j<n;j++){
+            // cout<<i<<j<<endl;
             results.emplace_back(
-                pool.enqueue([A,B,i,j] {
-                    int resultado = 0;
-                    for(int k=0;k<n;k++)
-                        resultado += A[i][k]*B[k][j];
+                pool.enqueue([A,B,i] {
+                    int resultado[n];
+                    for(int j = 0;j<n;j++){
+                        resultado[j]=0;
+                        for(int k=0;k<n;k++)
+                            resultado[j] += A[i][k]*B[k][j];
+                    }
                     return resultado;
                 })
             );
-        }
     }
     int matrizresult[n][n];
     int i = 0,j = 0;
     for(auto && result: results){
         int resultados = result.get();
-        matrizresult[i][j] = resultados;
-        j++;
-        if (j == n){
-            j = 0;
-            i++;
-        }
+        cout << resultados << ' ';
+        // matrizresult[i][j] = resultados;
+        // j++;
+        // if (j == n){
+        //     j = 0;
+        //     i++;
+        // }
     }
+    cout <<"hemos terminado"<< endl;
     for (int i=0;i<n;i++){
         for (int j=0;j<n;j++)
             cout<<matrizresult[i][j]<<" | ";
         cout<<endl;
     }
-    auto end = chrono::system_clock::now();
-    chrono::duration<float,milli> duration = end - start;
-    cout <<endl<<"Para una multiplicación de dos matrices de "<<n<<" por "<<n<<"\nSe dardó: "<< duration.count() << "milisegundos" << endl;
     return 0;
 }
